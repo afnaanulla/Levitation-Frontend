@@ -7,7 +7,7 @@ interface User {
   token: string;
 }
 
-interface AuthState {
+export  interface AuthState {
   userInfo: User | null;
 }
 

@@ -9,7 +9,7 @@ export interface Product {
   gst: number;
 }
 
-interface ProductState {
+export interface ProductState {
   products: Product[];
 }
 
