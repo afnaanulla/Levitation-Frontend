@@ -1,8 +1,10 @@
 import { Button } from "../ui/button"
 import { Link, useLocation } from "react-router-dom"
+import { useNavigate } from "react-router-dom";
 
 export default function Navbar() {
   const location = useLocation();
+  const navigate = useNavigate();
 
   const isLoginPage = location.pathname === "/login";
   const isAddProductPage = location.pathname === "/add-product";
@@ -36,8 +38,9 @@ export default function Navbar() {
         ) : isAddProductPage ? (
           <Button
             variant="outline"
-            className="bg-red-500 text-white border-red-500 
-                       hover:bg-red-600 hover:border-red-600 font-medium mr-20"
+            className=" text-black bg-[#CCF557] 
+                        font-medium mr-20"
+                        onClick={() => navigate('/login')}
           >
             Logout
           </Button>

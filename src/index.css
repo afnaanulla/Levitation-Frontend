@@ -11,3 +11,14 @@ body, html {
     scrollbar-width: none; /* Firefox */
   }
   
+  @page {
+    size: A4 portrait; /* or "A4 landscape" */
+    margin: 10mm; /* reduce margins to fit more */
+  }
+  
+  /* Or define a custom page height */
+  @page {
+    size: 210mm 400mm; /* width × height (here A4 width, but taller height) */
+    margin: 5mm;
+  }
+  

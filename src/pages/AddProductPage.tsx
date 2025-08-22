@@ -17,19 +17,21 @@ interface Product {
 
 const AddProductPage = () => {
   const [name, setName] = useState('');
-  const [qty, setQty] = useState(1);
-  const [rate, setRate] = useState(0);
+  const [qty, setQty] = useState('1');
+  const [rate, setRate] = useState('0');
   const products = useAppSelector((state) => state.products.products);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (name && qty > 0 && rate >= 0) {
-      dispatch(addProduct({ name, qty, rate }));
+    const numericQty = Number(qty);
+    const numericRate = Number(rate);
+    if (name && numericQty > 0 && numericRate >= 0) {
+      dispatch(addProduct({ name, qty: numericQty, rate: numericRate }));
       setName('');
-      setQty(1);
-      setRate(0);
+      setQty('1');
+      setRate('0');
     }
   };
 
@@ -47,11 +49,11 @@ const AddProductPage = () => {
   };
 
   return (
-    <div className="min-h-[130vh] flex items-center justify-center bg-black px-8 gap-12 w-full">
+    <div className="min-h-[180vh] flex items-center justify-center bg-black px-8 gap-12 w-full">
       <div
         style={{
           width: "1248px",
-          height: "701px",
+          height: "801px",
           top: "164.2px",
           left: "79px",
           gap: "32px",
@@ -60,23 +62,23 @@ const AddProductPage = () => {
         }}
         className="bg-black items-center justify-center"
       >
-        <div className="min-h-screen bg-white py-8 mt-10 -ml-1" style={{ width: "1850px" }}>
+        <div className="min-h-screen  py-8 mt-10 -ml-1" style={{ width: "1850px" }}>
           <div className="px-4 mt-[-20px]" style={{ width: "1550px" }}>
             <Card className="mb-8">
               <CardHeader>
-                <CardTitle style={{color:'green', fontSize: '40px', fontFamily: 'Inter, sans-serif'}}>Add Products</CardTitle>
-                <CardDescription>
+                <CardTitle style={{color:'white', fontSize: '40px', fontFamily: 'Inter, sans-serif'}}>Add Products</CardTitle>
+                <CardDescription style={{color: 'white'}}>
                   Add products to your invoice
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <form onSubmit={handleSubmit} className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div>
+                  <div>
                       <label
                         htmlFor="name"
                         className="block text-sm font-medium text-gray-700 mb-1"
-                        style={{fontSize: '16px',}}
+                        style={{fontSize: '16px', color: '#FFFFFF'}}
                       >
                         Product Name
                       </label>
@@ -88,13 +90,14 @@ const AddProductPage = () => {
                         required
                         placeholder="Enter the product name"
                         className="w-[800px] h-[60px] rounded-md px-4 py-2 border"
+                        style={{borderColor: '1px solid #424647', color:'#B3B3B3'}}
                       />
                     </div>
                     <div>
                       <label
                         htmlFor="qty"
                         className="block text-sm font-medium text-gray-700 mb-1"
-                        style={{fontSize: '16px',}}
+                        style={{fontSize: '16px', color: '#FFFFFF'}}
                       >
                         Product Price
                       </label>
@@ -103,16 +106,18 @@ const AddProductPage = () => {
                         type="number"
                         min="1"
                         value={qty}
-                        onChange={(e) => setQty(Number(e.target.value))}
+                        onChange={(e) => setQty((e.target.value))}
                         required
+                        placeholder='Enter the price'
                         className="w-[800px] h-[60px] rounded-md px-4 py-2 border"
+                        style={{borderColor: '1px solid #424647', color:'#B3B3B3'}}
                       />
                     </div>
                     <div>
                       <label
                         htmlFor="rate"
                         className="block text-sm font-medium text-gray-700 mb-1"
-                        style={{fontSize: '16px',}}
+                        style={{fontSize: '16px', color:'#FFFFFF'}}
                       >
                         Quantity
                       </label>
@@ -122,9 +127,11 @@ const AddProductPage = () => {
                         min="0"
                         step="0.01"
                         value={rate}
-                        onChange={(e) => setRate(Number(e.target.value))}
+                        onChange={(e) => setRate((e.target.value))}
                         required
                         className="w-[800px] h-[60px] rounded-md px-4 py-2 border"
+                        placeholder='Enter the Qty'
+                        style={{borderColor: '1px solid #424647', color:'#B3B3B3'}}
                       />
                     </div>
                   </div>
@@ -135,7 +142,7 @@ const AddProductPage = () => {
                       background: "linear-gradient(90.12deg, #141414 -6.53%, #303030 0.64%)",
                     }}
                   >
-                    <span className="text-white text-sm font-medium" style={{color: '#CCF575'}}>Add Product</span>
+                    <span className="text-white text-sm font-medium" style={{color: '#CCF575', fontFamily: 'Inter, sans-serif', fontWeight: '500', fontSize: '16px'}}>Add Product</span>
                     <div className="relative flex items-center justify-center w-[18.375px] h-[18.375px] rounded-full border border-[#CCF575]">
                       <div className="absolute w-[1.3125px] h-[9.1875px] bg-[#CCF575]" />
                       <div className="absolute w-[9.1875px] h-[1.3125px] bg-[#CCF575]" />
@@ -152,8 +159,8 @@ const AddProductPage = () => {
                   <CardDescription></CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="overflow-x-auto">
-                    <table className="min-w-full divide-y divide-gray-200">
+                  <div className="overflow-x-auto rounded-[10px]">
+                    <table className="min-w-full divide-y divide-gray-200 overflow-hidden border border-gray-700">
                       <thead className="bg-gray-50">
                         <tr>
                           <th className="px-6 py-3 text-left">
@@ -192,71 +199,69 @@ const AddProductPage = () => {
                               Total Price
                             </div>
                           </th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          <th className="px-6 py-3 text-left text-xs font-medium text-white-500 uppercase tracking-wider ">
                             Actions
                           </th>
                         </tr>
                       </thead>
-                      <tbody className="bg-white divide-y divide-gray-200">
-                        {products.map((product) => (
-                          <tr key={product.id}>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="text-sm font-medium text-gray-900">
-                                {product.name}
-                              </div>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                              ${product.rate.toFixed(2)}
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                              {product.qty}
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                              ${calculateTotalWithGST(product).toFixed(2)}
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                              <button
-                                onClick={() => dispatch(removeProduct(product.id))}
-                                className="text-red-600 hover:text-red-900"
-                              >
-                                Remove
-                              </button>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                      <tfoot className="bg-gray-50">
-                        <tr>
-                          <td colSpan={3} className="px-6 py-4 text-sm font-medium text-gray-900 text-right">
-                            Sub-Total
-                          </td>
-                          <td className="px-6 py-4 text-sm text-gray-500">
-                            INR {products.reduce((sum, product) => sum + calculateTotalWithGST(product), 0).toFixed(2)}
-                          </td>
-                          <td></td>
-                        </tr>
-                        <tr>
-                          <td colSpan={3} className="px-6 py-4 text-sm font-bold text-gray-900 text-right">
-                            Incl + GST 18%
-                          </td>
-                          <td className="px-6 py-4 text-sm text-gray-500">
-                            INR {products.reduce((sum, product) => sum + calculateTotalWithGST(product), 0).toFixed(2)}
-                          </td>
-                          <td></td>
-                        </tr>
-                        <tr>
-                          <td colSpan={3} className="px-6 py-4 text-sm font-bold text-gray-900 text-right">
-                            Grand Total
-                          </td>
-                          <td className="px-6 py-4 text-sm font-bold text-gray-900">
-                            INR {products.reduce((sum, product) => sum + calculateTotalWithGST(product), 0).toFixed(2)}
-                          </td>
-                          <td></td>
-                        </tr>
-                      </tfoot>
+                      <tbody className="divide-y divide-gray-700">
+    {products.map((product) => (
+      <tr key={product.id}>
+        <td className="px-6 py-4 whitespace-nowrap">
+          <div className="text-sm font-medium text-white">{product.name}</div>
+        </td>
+        <td className="px-6 py-4 whitespace-nowrap text-sm text-white">{product.rate.toFixed(2)}</td>
+        <td className="px-6 py-4 whitespace-nowrap text-sm text-white">{product.qty}</td>
+        <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
+          INR {calculateTotalWithGST(product).toFixed(2)}
+        </td>
+        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+          <button
+            onClick={() => dispatch(removeProduct(product.id))}
+            className="text-red-600 hover:text-red-900"
+          >
+            Remove
+          </button>
+        </td>
+      </tr>
+    ))}
+  </tbody>
+
+  <tfoot>
+  <tr className="border-t border-gray-700">
+    <td colSpan={3} className="px-6 py-4 text-sm font-medium text-white text-right">
+      Sub-Total
+    </td>
+    <td className="px-6 py-4 text-sm text-white">
+  INR {products.reduce((sum, product) => sum + product.qty * product.rate, 0).toFixed(2)}
+</td>
+    <td></td>
+  </tr>
+
+  <tr className="border-t border-gray-700">
+    <td colSpan={3} className="px-6 py-4 text-sm font-bold text-white text-right">
+      Incl + GST 18%
+    </td>
+    <td className="px-6 py-4 text-sm text-white">
+      INR {products.reduce((sum, product) => sum + calculateTotalWithGST(product), 0).toFixed(2)}
+    </td>
+    <td></td>
+  </tr>
+
+  <tr className="border-t-2 border-gray-500 rounded-bl-[10px] rounded-br-[10px] overflow-hidden"> {/* top + bottom border */}
+    <td colSpan={3} className="px-6 py-4 text-sm font-bold text-white text-right rounded-bl-[10px]">
+      Grand Total
+    </td>
+    <td className="px-6 py-4 text-sm font-bold text-white">
+      INR {products.reduce((sum, product) => sum + calculateTotalWithGST(product), 0).toFixed(2)}
+    </td>
+    <td></td>
+  </tr>
+</tfoot>
+
                     </table>
                   </div>
-                  <div className="mt-6 flex justify-center">
+                  <div className="flex justify-center mt-20">
                 <Button
                   onClick={handleNext}
                   className="px-6"
