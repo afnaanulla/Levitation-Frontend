@@ -6,6 +6,7 @@ import RegisterPage from './pages/RegisterPage';
 import AddProductPage from './pages/AddProductPage';
 import GeneratePDFPage from './pages/GeneratePDFPage';
 import { useAppSelector } from './app/hooks';
+import Navbar from './components/layout/Navbar';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { userInfo } = useAppSelector((state) => state.auth);
@@ -16,6 +17,8 @@ function App() {
   return (
     <Provider store={store}>
       <Router>
+      <Navbar />
+      
         <Routes>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />

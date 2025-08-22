@@ -5,12 +5,15 @@ import { useAppDispatch, useAppSelector } from '../app/hooks';
 import { clearProducts } from '../features/productSlice';
 import { generateInvoice } from '../services/invoiceService';
 import { Button } from '../components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../components/ui/card';
 
 const GeneratePDFPage = () => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState('');
+
   const products = useAppSelector((state) => state.products.products);
+  const user = useAppSelector((state) => state.auth.userInfo);
+
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
@@ -33,7 +36,6 @@ const GeneratePDFPage = () => {
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
       
-      // Clear products after successful generation
       dispatch(clearProducts());
       navigate('/add-product');
     } catch (err: unknown) {
@@ -49,110 +51,202 @@ const GeneratePDFPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-4xl mx-auto px-4">
-        <Card>
-          <CardHeader>
-            <CardTitle>Invoice Preview</CardTitle>
-            <CardDescription>
-              Review your invoice details before generating the PDF
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="border rounded-lg p-6 bg-white">
-              <div className="flex justify-between items-start mb-8">
-                <div>
-                  <h2 className="text-2xl font-bold">INVOICE</h2>
-                  <p className="text-gray-600">Date: {new Date().toLocaleDateString()}</p>
+    <div className="min-h-[130vh] flex items-center justify-center bg-black px-8 gap-12 w-full">
+      <div className="min-h-screen bg-gray-50 py-8 w-[1200px]">
+        <div className="max-w-4xl mx-auto px-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>Invoice Preview</CardTitle>
+              <CardDescription>
+                Review your invoice details before generating the PDF
+              </CardDescription>
+            </CardHeader>
+            <CardContent style={{ position: 'relative' }}>
+              <div className="border rounded-lg p-6 bg-white">
+                {/* Header */}
+                <div className="flex justify-between items-start mb-8">
+                  <div>
+                    <img src="/logo.png" alt="Invoice" className="h-10 w-auto" />
+                  </div>
+                  <div className="text-right">
+                    <h3 className="text-lg font-semibold">INVOICE GENERATOR</h3>
+                  </div>
                 </div>
-                <div className="text-right">
-                  <h3 className="text-lg font-semibold">Your Company</h3>
-                  <p className="text-gray-600">123 Business Street</p>
-                  <p className="text-gray-600">City, State, ZIP</p>
+                <hr className="border-t-2 border-gray-300 mb-8" />
+
+                {/* User Info Box */}
+                <div
+                  className="w-[549px] h-[86px] rounded-[10px] opacity-100 flex flex-col justify-center px-6 text-white mb-8"
+                  style={{
+                    background:
+                      'linear-gradient(90.77deg, #0F0F0F 10.65%, #303661 114.19%)',
+                  }}
+                >
+                  <div className="flex justify-between text-sm font-medium">
+                    <span>Name:</span>
+                    <span>Date: {new Date().toLocaleDateString()}</span>
+                  </div>
+                  <div className="flex justify-between text-sm mt-1">
+                    <span>{user?.name ?? 'Guest User'}</span>
+                    <span>{user?.email ?? 'No email'}</span>
+                  </div>
                 </div>
-              </div>
-              
-              <div className="mb-8">
-                <h3 className="text-lg font-semibold mb-2">Bill To:</h3>
-                <p className="text-gray-800">Customer Name</p>
-                <p className="text-gray-600">customer@example.com</p>
-              </div>
-              
-              <div className="overflow-x-auto mb-8">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Product
-                      </th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Quantity
-                      </th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Rate
-                      </th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Total
-                      </th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        GST (18%)
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
-                    {products.map((product) => (
-                      <tr key={product.id}>
-                        <td className="px-4 py-3 text-sm text-gray-900">{product.name}</td>
-                        <td className="px-4 py-3 text-sm text-gray-500">{product.qty}</td>
-                        <td className="px-4 py-3 text-sm text-gray-500">${product.rate.toFixed(2)}</td>
-                        <td className="px-4 py-3 text-sm text-gray-500">${product.total.toFixed(2)}</td>
-                        <td className="px-4 py-3 text-sm text-gray-500">${product.gst.toFixed(2)}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                  <tfoot className="bg-gray-50">
-                    <tr>
-                      <td colSpan={3} className="px-4 py-3 text-sm font-medium text-gray-900">
-                        Subtotal
-                      </td>
-                      <td className="px-4 py-3 text-sm text-gray-500">
-                        ${subtotal.toFixed(2)}
-                      </td>
-                      <td className="px-4 py-3 text-sm text-gray-500">
-                        ${gstAmount.toFixed(2)}
-                      </td>
-                    </tr>
-                    <tr>
-                      <td colSpan={3} className="px-4 py-3 text-sm font-bold text-gray-900">
-                        Grand Total
-                      </td>
-                      <td className="px-4 py-3 text-sm font-bold text-gray-900" colSpan={2}>
-                        ${grandTotal.toFixed(2)}
-                      </td>
-                    </tr>
-                  </tfoot>
-                </table>
-              </div>
-              
-              <div className="flex justify-between">
-                <Button 
-                  variant="outline" 
-                  onClick={() => navigate('/add-product')}
+
+                {/* Invoice Table */}
+                <div className="overflow-x-auto mb-8">
+                  {/* Custom Header Div */}
+                  <div
+                    className="text-white"
+                    style={{
+                      width: '600px',
+                      height: '31.990997314453125px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '7.14px',
+                      transform: 'rotate(0deg)',
+                      opacity: 1,
+                      borderRadius: '78px',
+                      padding: '10px',
+                      background:
+                        'linear-gradient(90.77deg, #303661 10.65%, #263406 114.19%)',
+                    }}
+                  >
+                    <div
+                      className="px-4 text-left text-xs font-medium uppercase tracking-wider"
+                      style={{ width: '150px' }}
+                    >
+                      Product
+                    </div>
+                    <div
+                      className="px-4 text-left text-xs font-medium uppercase tracking-wider"
+                      style={{ width: '100px' }}
+                    >
+                      Quantity
+                    </div>
+                    <div
+                      className="px-4 text-left text-xs font-medium uppercase tracking-wider"
+                      style={{ width: '100px' }}
+                    >
+                      Rate
+                    </div>
+                    <div
+                      className="px-4 text-left text-xs font-medium uppercase tracking-wider"
+                      style={{ width: '100px' }}
+                    >
+                      Total
+                    </div>
+                    {/* <div
+                      className="px-4 text-left text-xs font-medium uppercase tracking-wider"
+                      style={{ width: '100px' }}
+                    >
+                      GST (18%)
+                    </div> */}
+                  </div>
+
+                  {/* Table */}
+                  <table
+                    className="border-separate border-spacing-0"
+                    style={{ tableLayout: 'fixed', width: '600px' }}
+                  >
+                    <tbody>
+                      {products.map((product, index) => (
+                        <tr
+                          key={product.id}
+                          style={{
+                            backgroundColor: index % 2 === 0 ? '#FFFFFF' : '#FAFAFA',
+                          }}
+                        >
+                          <td
+                            className="px-4 py-3 text-sm text-gray-900"
+                            style={{ width: '150px' }}
+                          >
+                            {product.name}
+                          </td>
+                          <td
+                            className="px-4 py-3 text-sm text-gray-500"
+                            style={{ width: '100px' }}
+                          >
+                            {product.qty}
+                          </td>
+                          <td
+                            className="px-4 py-3 text-sm text-gray-500"
+                            style={{ width: '100px' }}
+                          >
+                            ${product.rate.toFixed(2)}
+                          </td>
+                          <td
+                            className="px-4 py-3 text-sm text-gray-500"
+                            style={{ width: '100px' }}
+                          >
+                            ${product.total.toFixed(2)}
+                          </td>
+                          <td
+                            className="px-4 py-3 text-sm text-gray-500"
+                            style={{ width: '100px' }}
+                          >
+                            {/* ${product.gst.toFixed(2)} */}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Subtotal, GST, and Grand Total Div */}
+                <div
+                  style={{
+                    width: '253px',
+                    height: '104px',
+                    position: 'absolute',
+                    top: '402.5px',
+                    left: '319px',
+                    borderRadius: '8px',
+                    borderWidth: '1px',
+                    borderStyle: 'solid',
+                    borderColor: '#000',
+                    padding: '11.87px',
+                    gap: '11.87px',
+                    transform: 'rotate(0deg)',
+                    opacity: 1,
+                    boxSizing: 'border-box',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'space-between',
+                    background: '#FAFAFA',
+                  }}
                 >
-                  Back to Edit
-                </Button>
-                <Button 
-                  onClick={handleGeneratePDF} 
-                  disabled={isGenerating || products.length === 0}
-                >
-                  {isGenerating ? 'Generating...' : 'Generate PDF'}
-                </Button>
+                  <div className="flex justify-between text-sm">
+                    <span className="font-medium text-gray-900">Subtotal</span>
+                    <span className="text-gray-500">${subtotal.toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="font-medium text-gray-900">GST (18%)</span>
+                    <span className="text-gray-500">${gstAmount.toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between text-sm font-bold">
+                    <span className="text-gray-900">Grand Total</span>
+                    <span className="text-gray-900">${grandTotal.toFixed(2)}</span>
+                  </div>
+                </div>
+
+                {/* Buttons */}
+                <div className="flex justify-between mt-12">
+                  <Button variant="outline" onClick={() => navigate('/add-product')}>
+                    Back to Edit
+                  </Button>
+                  <Button
+                    onClick={handleGeneratePDF}
+                    disabled={isGenerating || products.length === 0}
+                  >
+                    {isGenerating ? 'Generating...' : 'Generate PDF'}
+                  </Button>
+                </div>
+
+                {error && <p className="text-red-500 mt-4 text-center">{error}</p>}
               </div>
-              
-              {error && <p className="text-red-500 mt-4 text-center">{error}</p>}
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   );
